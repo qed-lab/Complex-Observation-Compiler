@@ -8,7 +8,7 @@ NFF_TARGET = pr2plan
 CXXFLAGS = -O3 -Wall -Imod-metric-ff -DNDEBUG
 LDFLAGS = -Lmod-metric-ff/
 #EFENCE = -lefence
-STATIC = -static
+# STATIC = -static   #Only uncomment if you're willing to include all the C libraries down south.
 LIBS = -lff $(EFENCE)
 
 NFF_SOURCES = PDDL.cxx \
@@ -53,11 +53,9 @@ clean:
 
 PDDL.o: PDDL.hxx pddl_basic_types.hxx pddl_string_table.hxx
 PDDL.o: pddl_fluent_set.hxx bitarray.hxx nff_logic.hxx
-PDDL.o:  ar.h utils.hxx
+PDDL.o:   utils.hxx
 PDDL.o:  options.hxx mod-metric-ff/libff.h
 PDDL.o: mod-metric-ff/ff.h
-PDDL.o: readtypes.h
-PDDL.o: ar.h
 pddl_fluent_set.o: pddl_fluent_set.hxx bitarray.hxx
 pddl_string_table.o: pddl_string_table.hxx pddl_basic_types.hxx
 bitarray.o: bitarray.hxx
@@ -66,22 +64,19 @@ options.o: options.hxx
 pr_obs_reader.o: pr_obs_reader.hxx act_obs.hxx string_ops.hxx PDDL.hxx
 pr_obs_reader.o: pddl_basic_types.hxx pddl_string_table.hxx
 pr_obs_reader.o: pddl_fluent_set.hxx bitarray.hxx nff_logic.hxx
-pr_obs_reader.o: ar.h
 pr_strips_mapping.o: pr_strips_mapping.hxx strips_writer.hxx act_obs.hxx
 pr_strips_mapping.o: PDDL.hxx pddl_basic_types.hxx pddl_string_table.hxx
 pr_strips_mapping.o: pddl_fluent_set.hxx bitarray.hxx nff_logic.hxx
-pr_strips_mapping.o: ar.h options.hxx
+pr_strips_mapping.o:  options.hxx
 strips_writer.o: strips_writer.hxx PDDL.hxx pddl_basic_types.hxx
 strips_writer.o: pddl_string_table.hxx pddl_fluent_set.hxx bitarray.hxx
 strips_writer.o: nff_logic.hxx
-strips_writer.o: ar.h string_ops.hxx
+strips_writer.o:  string_ops.hxx
 act_obs.o: act_obs.hxx pddl_string_table.hxx pddl_basic_types.hxx PDDL.hxx
 act_obs.o: pddl_fluent_set.hxx bitarray.hxx nff_logic.hxx
-act_obs.o: ar.h
-main.o:  readtypes.h
-main.o: read.h utils.hxx
+main.o:  utils.hxx
 main.o:  PDDL.hxx pddl_basic_types.hxx
 main.o: pddl_string_table.hxx pddl_fluent_set.hxx bitarray.hxx nff_logic.hxx
-main.o:  ar.h options.hxx
+main.o:   options.hxx
 main.o: pr_obs_reader.hxx act_obs.hxx pr_strips_mapping.hxx strips_writer.hxx
 main.o: string_ops.hxx
