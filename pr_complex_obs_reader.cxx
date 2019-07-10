@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cctype>
 
+#include "string_ops.h"
+
 PR_Complex_Observation_Set_Reader::PR_Complex_Observation_Set_Reader()
 {
 	make_operator_index();
