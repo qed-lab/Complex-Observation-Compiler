@@ -21,7 +21,8 @@ NFF_SOURCES = PDDL.cxx \
 	pr_strips_mapping.cxx \
 	strips_writer.cxx \
 	act_obs.cxx \
-	main.cxx
+	main.cxx \
+	act_obs_complex.cxx
 
 NFF_OBJECTS = $(NFF_SOURCES:.cxx=.o)
 
@@ -80,3 +81,6 @@ main.o: pddl_string_table.hxx pddl_fluent_set.hxx bitarray.hxx nff_logic.hxx
 main.o:   options.hxx
 main.o: pr_obs_reader.hxx act_obs.hxx pr_strips_mapping.hxx strips_writer.hxx
 main.o: string_ops.hxx
+
+
+main.o: act_obs_complex.hxx

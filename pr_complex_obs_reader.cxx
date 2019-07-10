@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cctype>
 
-#include "string_ops.h"
+#include "string_ops.hxx"
 
 PR_Complex_Observation_Set_Reader::PR_Complex_Observation_Set_Reader()
 {

@@ -9,23 +9,27 @@
 #include "pr_strips_mapping.hxx"
 #include "string_ops.hxx"
 
+#include "act_obs_complex.hxx"
+
 int main( int argc, char** argv )
 {
 	double t0, tf;
 
+  // Get domain names and all that.
 	Options::parse_command_line( argc, argv );
 	Options& prog_opts = Options::instance();
 
-	std::ofstream stats( "execution.stats" );	
+	std::ofstream stats( "execution.stats" );
 
 
 	t0 = time_used();
 	PDDL::Task& task = PDDL::Task::instance();
+  // Set up original planning problem in code representation
 	task.setup();
 
 	tf = time_used();
 	stats << "Domain=" << task.domain_name() << std::endl;
-	stats << "Problem=" << task.problem_name() << std::endl;	
+	stats << "Problem=" << task.problem_name() << std::endl;
 
 	stats << "Preprocessing=";  report_interval( t0, tf, stats );
 
@@ -36,7 +40,7 @@ int main( int argc, char** argv )
 		std::ofstream ops_out( "operators.list" );
 		std::ofstream init_out( "initial.list" );
 		std::ofstream goal_out( "goal.list" );
-	
+
 		task.print_fluents( fluents_out );
 		task.print_operators( ops_out );
 		task.print_initial_state( init_out );
@@ -47,18 +51,22 @@ int main( int argc, char** argv )
 	}
 	stats << "Fluents=" << task.fluents().size() << std::endl;
 	std::cout << "Fluents=" << task.fluents().size() << std::endl;
-	stats << "Operators=" << task.useful_ops().size() << std::endl;	
+	stats << "Operators=" << task.useful_ops().size() << std::endl;
 	std::cout << "Operators=" << task.useful_ops().size() << std::endl;
 	std::cout << "Initial state: ";
 
-	PR_Observation_Stream_Reader obs_stream_reader;
-	obs_stream_reader.parse( prog_opts.obs_filename() );
+
+  // Read in the observations (We will replace this with our own)
+  Complex_Observation_Set observations(prog_opts.obs_filename());
+  observations.print_all(std::cout);
+  PR_Observation_Stream_Reader obs_stream_reader;
+  obs_stream_reader.parse( prog_opts.obs_filename() );
 
 	if ( !prog_opts.prob_pr_mode() )
 	{
 		PR_STRIPS_Mapping writer( obs_stream_reader.obs_stream() );
 		writer.write();
-		
+
 		return 0;
 	}
 	system( "rm -rf prob-PR" );

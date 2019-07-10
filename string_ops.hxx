@@ -17,12 +17,12 @@ inline TokenList split( std::string s, char splitter )
 	if ( offset == std::string::npos )
 		return tokens;
 
-	
+
 	std::string token = s.substr( 0, offset );
 	if ( !token.empty() )
 		tokens.push_back( token );
 	s = s.substr( offset + 1, s.size() - (offset+1) );
-	
+
 	while( !s.empty() )
 	{
 		offset = s.find( splitter );
@@ -36,7 +36,7 @@ inline TokenList split( std::string s, char splitter )
 			tokens.push_back( token );
 		s = s.substr( offset + 1, s.size() - (offset+1));
 	}
-	
+
 	return tokens;
 }
 
@@ -59,16 +59,16 @@ inline std::string	strip(std::string input)
 {
 	std::string::iterator start = input.begin();
 	std::string::iterator end = input.end();
-	
+
 	for ( ;start != input.end(); start++)
-		if ( isalnum(*start) ) break;
+		if ( isalnum(*start) || *start == '[' || *start == '{' || *start == '|' || *start == '~') break;
 	for ( ;end != start; end-- )
-		if ( isalnum(*end) )
+		if ( isalnum(*end) || *end == ']' || *end == '}' || *end == '|' || *end == '~')
 		{
 			end++;
 			break;
 		}
-	
+
 	std::string stripped;
 	stripped.assign( start, end );
 	return stripped;
@@ -81,7 +81,7 @@ inline	std::string	replace( std::string input, char o, char n )
 	for ( unsigned k = 0; k < input.size(); k++ )
 		if ( input[k] == o ) repl.push_back( n );
 		else repl.push_back( input[k] );
-	return repl; 
+	return repl;
 }
 
 #endif // string_ops.hxx

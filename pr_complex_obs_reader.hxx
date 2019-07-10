@@ -32,6 +32,7 @@ private:
 	std::map< std::string, unsigned>	m_operator_index;
 	Complex_Observation_Set 			m_set;
   int m_observation_ID_counter = 0;
+
   std::set<std::string> parse(std::string observations, std::set<std::string> ordering_fluent_preconditions);
 
 
