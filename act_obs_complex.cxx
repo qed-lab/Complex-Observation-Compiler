@@ -199,8 +199,11 @@ std::set<std::string> Complex_Observation_Set::parse(std::string observations, s
   {
     // Split by commas and parse each as a base case
     std::vector<std::string> members = split(std::next(obs_start), std::prev(obs_end), ',');
+    std::string observed_fluent = "OBSERVED_OB_ID_" + std::to_string(m_observation_ID_counter);
+    m_observation_ID_counter++;
     for (std::vector<std::string>::iterator member = members.begin(); member != members.end(); ++member) {
-
+      observed_fluent = add_observation(strip(*member), true, observed_fluent, ordering_fluent_preconditions);
+      contained_observation_fluents.insert(observed_fluent);
     }
 
   }
@@ -304,6 +307,8 @@ std::vector<std::string> Complex_Observation_Set::split(std::string::iterator be
         itemStart = std::next(place);
       }
     }
+    std::string member(itemStart, std::next(place));
+    members.push_back(member);
 
     return members;
 }
