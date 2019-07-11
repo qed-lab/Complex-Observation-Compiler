@@ -57,8 +57,12 @@ class Complex_Observation_Set
 public:
   Complex_Observation_Set(std::string observation_filename);
   ~Complex_Observation_Set();
-  std::string add_observation(std::string observation, bool is_action_observation, std::string observation_ID, std::set<std::string> ordering_fluents);
+  std::string add_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents);
   void print_all(std::ostream& os);
+
+  std::set<std::string>& observation_fluents() {return m_observed_fluents;}
+  std::vector<Action_Execution_Complex_Observation*>& observations() { return m_observations;}
+
 
 protected:
   std::map< std::string, unsigned >&	operator_index() { return m_operator_index; }

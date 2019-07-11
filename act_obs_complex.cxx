@@ -199,27 +199,20 @@ std::set<std::string> Complex_Observation_Set::parse(std::string observations, s
   {
     // Split by commas and parse each as a base case
     std::vector<std::string> members = split(std::next(obs_start), std::prev(obs_end), ',');
-    std::string observed_fluent = "OBSERVED_OB_ID_" + std::to_string(m_observation_ID_counter);
+    std::string observed_fluent = "OBSERVED_MUTEX_ID_" + std::to_string(m_observation_ID_counter);
     m_observation_ID_counter++;
     for (std::vector<std::string>::iterator member = members.begin(); member != members.end(); ++member) {
-      observed_fluent = add_observation(strip(*member), true, observed_fluent, ordering_fluent_preconditions);
+      observed_fluent = add_observation(strip(*member), observed_fluent, ordering_fluent_preconditions);
       contained_observation_fluents.insert(observed_fluent);
     }
 
   }
-
-  // Case: a single fluent observation
-  else if( begin_char == '~' && end_char == '~')
-  {
-
-  }
-
-  // Base case: a single action observation
+  // Base case: a single observation
   else
   {
-    std::string observed_fluent = "OBSERVED_OB_ID_" + std::to_string(m_observation_ID_counter);
+    std::string observed_fluent = "OBSERVED_OBS_ID_" + std::to_string(m_observation_ID_counter);
     m_observation_ID_counter++;
-    observed_fluent = add_observation(observations, true, observed_fluent, ordering_fluent_preconditions);
+    observed_fluent = add_observation(observations, observed_fluent, ordering_fluent_preconditions);
     contained_observation_fluents.insert(observed_fluent);
 
   }
@@ -229,9 +222,22 @@ std::set<std::string> Complex_Observation_Set::parse(std::string observations, s
 }
 
 
-std::string Complex_Observation_Set::add_observation(std::string observation, bool is_action_observation, std::string observation_ID, std::set<std::string> ordering_fluents){
+std::string Complex_Observation_Set::add_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents){
 
-  if( is_action_observation){
+  observation = strip(observation);
+  std::string::iterator obs_start = observation.begin();
+  std::string::iterator obs_end = std::prev(observation.end());
+  char begin_char = *(obs_start);
+  char end_char = *(obs_end);
+
+  if( begin_char == '~' && end_char == '~'){
+    std::vector<std::string> fluentlist = split(std::next(obs_start), std::prev(obs_end), '^');
+    std::set<std::string> fluents(fluentlist.begin(), fluentlist.end());
+    Action_Execution_Complex_Observation* new_obs = new Action_Execution_Complex_Observation(fluents, ordering_fluents, observation_ID);
+		m_observations.push_back( new_obs );
+    return new_obs->observed_fluent();
+  }
+  else {
     for ( unsigned k = 0; k < observation.size(); k++ )
 			observation[k] = toupper(observation[k]);
 		std::map< std::string, unsigned>::iterator it = operator_index().find( observation );
@@ -303,12 +309,12 @@ std::vector<std::string> Complex_Observation_Set::split(std::string::iterator be
     for(; place != end; ++place){
       if(*place == delim){
         std::string member(itemStart, place);
-        members.push_back(member);
+        members.push_back(strip(member));
         itemStart = std::next(place);
       }
     }
     std::string member(itemStart, std::next(place));
-    members.push_back(member);
+    members.push_back(strip(member));
 
     return members;
 }
