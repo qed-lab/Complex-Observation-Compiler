@@ -10,6 +10,7 @@
 #include "string_ops.hxx"
 
 #include "act_obs_complex.hxx"
+#include "pr_strips_mapping_complex.hxx"
 
 int main( int argc, char** argv )
 {
@@ -59,12 +60,12 @@ int main( int argc, char** argv )
   // Read in the observations (We will replace this with our own)
   Complex_Observation_Set observations(prog_opts.obs_filename());
   observations.print_all(std::cout);
-  PR_Observation_Stream_Reader obs_stream_reader;
-  obs_stream_reader.parse( prog_opts.obs_filename() );
+  // PR_Observation_Stream_Reader obs_stream_reader;
+  // obs_stream_reader.parse( prog_opts.obs_filename() );
 
 	if ( !prog_opts.prob_pr_mode() )
 	{
-		PR_STRIPS_Mapping writer( obs_stream_reader.obs_stream() );
+		PR_STRIPS_Mapping_Complex writer( observations );
 		writer.write();
 
 		return 0;
@@ -72,14 +73,14 @@ int main( int argc, char** argv )
 	system( "rm -rf prob-PR" );
 	system( "mkdir prob-PR" );
 
-	PR_STRIPS_Mapping writer( obs_stream_reader.obs_stream(), false, prog_opts.convert_to_integer(), prog_opts.factor() );
+	PR_STRIPS_Mapping_Complex writer( observations, false, prog_opts.convert_to_integer(), prog_opts.factor() );
 	std::string path( "prob-PR/O/" );
 	writer.set_base_path( path );
 	std::string cmd = "mkdir " + path;
 	system( cmd.c_str() );
 	writer.write();
 
-	PR_STRIPS_Mapping writer2( obs_stream_reader.obs_stream(), true, prog_opts.convert_to_integer(), prog_opts.factor() );
+	PR_STRIPS_Mapping_Complex writer2( observations, true, prog_opts.convert_to_integer(), prog_opts.factor() );
 	path =  "prob-PR/neg-O/";
 	writer2.set_base_path( path );
 	cmd = "mkdir " + path;

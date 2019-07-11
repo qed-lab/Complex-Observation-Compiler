@@ -7,16 +7,16 @@
 
 #include "string_ops.hxx"
 
-Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::string op_name, unsigned op_index, std::set<std::string> ordering_prec_fluents, std::string observation_ID)
-	: m_ordinal( 0 ), m_observation_ID(observation_ID), m_is_action_obs(true)
+Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::string op_name, unsigned op_index, std::set<std::string> ordering_prec_fluents, std::string observation_ID, unsigned option_group_idx)
+	: m_ordinal( 0 ), m_observation_ID(observation_ID), m_is_action_obs(true), m_option_group_idx(option_group_idx)
 {
   set_op_name(op_name);
   set_op_index(op_index);
   set_ordering_prec_fluents(ordering_prec_fluents);
 }
 
-Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::set<std::string> observed_fluents, std::set<std::string> ordering_prec_fluents, std::string observation_ID)
-	: m_ordinal( 0 ), m_observation_ID(observation_ID), m_is_action_obs(false)
+Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::set<unsigned> observed_fluents, std::set<std::string> ordering_prec_fluents, std::string observation_ID, unsigned option_group_idx)
+	: m_ordinal( 0 ), m_observation_ID(observation_ID), m_is_action_obs(false), m_option_group_idx(option_group_idx)
 {
   set_observed_fluents(observed_fluents);
   set_ordering_prec_fluents(ordering_prec_fluents);
@@ -44,8 +44,8 @@ void Action_Execution_Complex_Observation::print(std::ostream& os)
     os << "\tobserved action #: "<< m_operator;
   } else {
     os << "\tobserved fluents:\n";
-    for (std::set<std::string>::iterator fl = m_observed_fluents.begin(); fl != m_observed_fluents.end(); ++fl) {
-      os << "\n\t\t" << *fl;
+    for (std::set<unsigned>::iterator fl = m_observed_fluents.begin(); fl != m_observed_fluents.end(); ++fl) {
+      os << ", " << *fl;
     }
   }
   os << "\n\tpreconditions:\n";
@@ -95,13 +95,9 @@ Complex_Observation_Set::Complex_Observation_Set(std::string observation_filenam
 		std::exit(1);
 	}
 
-  // Get the operators from the domain, for easy referencing
-  make_operator_index();
+  // Get the operators/fluents from the domain, for easy referencing
+  make_operator_and_fluent_indexes();
 
-	// std::string observations;
-	unsigned n_line = 0;
-
-  // observations.assign( in );
   std::stringstream buffer;
   buffer << in.rdbuf();
   std::string observations = buffer.str();
@@ -138,7 +134,7 @@ void Complex_Observation_Set::print_all(std::ostream& os){
 
 
 // Get all the operators from the domain, for easy referencing
-void Complex_Observation_Set::make_operator_index()
+void Complex_Observation_Set::make_operator_and_fluent_indexes()
 {
 	PDDL::Task& task = PDDL::Task::instance();
 
@@ -151,6 +147,16 @@ void Complex_Observation_Set::make_operator_index()
 		PDDL::Operator* op_ptr = task.useful_ops()[op];
 		std::string clean_op_name = strip( task.str_tab().get_token( op_ptr->code() ) );
 		operator_index().insert( std::make_pair( clean_op_name, op ) );
+	}
+
+  for ( unsigned f = 1; f < task.fluents().size(); f++ )
+	{
+		PDDL::Fluent* ft = task.fluents()[f];
+		// std::cout << task.str_tab().get_token( ft->code() ) << " -> ";
+		std::string clean_ft_name = strip(task.str_tab().get_token( ft->code() ));
+		// std::cout << clean_ft_name << " -> ";
+	  fluent_index().insert( std::make_pair( replace( clean_ft_name, ' ', '_' ), f) );
+		// std::cout << m_pred_names.back() << std::endl;
 	}
 }
 
@@ -199,21 +205,22 @@ std::set<std::string> Complex_Observation_Set::parse(std::string observations, s
   {
     // Split by commas and parse each as a base case
     std::vector<std::string> members = split(std::next(obs_start), std::prev(obs_end), ',');
-    std::string observed_fluent = "OBSERVED_MUTEX_ID_" + std::to_string(m_observation_ID_counter);
+    std::string observation_ID = "MUTEX_" + std::to_string(m_observation_ID_counter);
     m_observation_ID_counter++;
+    unsigned option_group_idx = 1;
     for (std::vector<std::string>::iterator member = members.begin(); member != members.end(); ++member) {
-      observed_fluent = add_observation(strip(*member), observed_fluent, ordering_fluent_preconditions);
-      contained_observation_fluents.insert(observed_fluent);
+      observation_ID = add_observation(strip(*member), observation_ID, ordering_fluent_preconditions, option_group_idx++);
+      contained_observation_fluents.insert(observation_ID);
     }
 
   }
   // Base case: a single observation
   else
   {
-    std::string observed_fluent = "OBSERVED_OBS_ID_" + std::to_string(m_observation_ID_counter);
+    std::string observation_ID = "OBSERVATION_" + std::to_string(m_observation_ID_counter);
     m_observation_ID_counter++;
-    observed_fluent = add_observation(observations, observed_fluent, ordering_fluent_preconditions);
-    contained_observation_fluents.insert(observed_fluent);
+    observation_ID = add_observation(observations, observation_ID, ordering_fluent_preconditions);
+    contained_observation_fluents.insert(observation_ID);
 
   }
 
@@ -222,7 +229,26 @@ std::set<std::string> Complex_Observation_Set::parse(std::string observations, s
 }
 
 
-std::string Complex_Observation_Set::add_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents){
+
+std::string Complex_Observation_Set::normalize_fluent(std::string fl_str){
+  fl_str = strip(fl_str);
+  std::string normalized;
+
+  // Replace whitespaces with underscores, and capitalize everything else
+  for(std::string::iterator place = fl_str.begin(); place != fl_str.end(); ++place){
+    if( isspace(*place)){
+      while(isspace(*place) && place != fl_str.end()){
+        ++place;
+      }
+      normalized.append(1,'_');
+    }
+    normalized.append(1,toupper(*place));
+  }
+  std::cout << "NORMALIZED: "<< normalized << std::endl;
+  return normalized;
+}
+
+std::string Complex_Observation_Set::add_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents, unsigned option_group_idx){
 
   observation = strip(observation);
   std::string::iterator obs_start = observation.begin();
@@ -232,10 +258,23 @@ std::string Complex_Observation_Set::add_observation(std::string observation, st
 
   if( begin_char == '~' && end_char == '~'){
     std::vector<std::string> fluentlist = split(std::next(obs_start), std::prev(obs_end), '^');
-    std::set<std::string> fluents(fluentlist.begin(), fluentlist.end());
-    Action_Execution_Complex_Observation* new_obs = new Action_Execution_Complex_Observation(fluents, ordering_fluents, observation_ID);
+    std::set<unsigned> fluent_indices;
+    for (int i = 0; i < fluentlist.size(); i++) {
+      fluentlist[i] = normalize_fluent(fluentlist[i]);
+      std::map< std::string, unsigned>::iterator it = fluent_index().find(fluentlist[i]);
+      if ( it == fluent_index().end() )
+  		{
+  			std::cout << "Could not find fluent ";
+  			std::cout << "(" << fluentlist[i] << ")" << std::endl;
+  			std::cout << "Bailing out!" << std::endl;
+  			std::exit(1);
+  		}
+      fluent_indices.insert(it->second);
+    }
+    // std::set<std::string> fluents(fluentlist.begin(), fluentlist.end());
+    Action_Execution_Complex_Observation* new_obs = new Action_Execution_Complex_Observation(fluent_indices, ordering_fluents, observation_ID, option_group_idx);
 		m_observations.push_back( new_obs );
-    return new_obs->observed_fluent();
+    return new_obs->observation_ID();
   }
   else {
     for ( unsigned k = 0; k < observation.size(); k++ )
@@ -248,9 +287,9 @@ std::string Complex_Observation_Set::add_observation(std::string observation, st
 			std::cout << "Bailing out!" << std::endl;
 			std::exit(1);
 		}
-		Action_Execution_Complex_Observation* new_obs = new Action_Execution_Complex_Observation(observation, it->second, ordering_fluents, observation_ID);
+		Action_Execution_Complex_Observation* new_obs = new Action_Execution_Complex_Observation(observation, it->second, ordering_fluents, observation_ID, option_group_idx);
 		m_observations.push_back( new_obs );
-    return new_obs->observed_fluent();
+    return new_obs->observation_ID();
   }
 
 }

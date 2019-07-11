@@ -18,18 +18,18 @@ public:
 	Name_Table&		exp_str() { return m_explained_str; }
 	Name_Table&		not_exp_str() { return m_not_explained_str; }
 
-	Complex_Observation_Set& 	obs_set() { return m_obs_set; }
+	// Complex_Observation_Set& 	obs_set() { return m_obs_set.observations(); }
 
 protected:
 
-	void	make_explained_strings();
+	// void	make_explained_strings();
 	void	write_predicates_definitions();
 	void	write_actions_definitions();
 	void	write_init_definition();
 	void	write_goal_definition();
 
-	void 	write_explain_obs_op( unsigned op, unsigned k );
-	void	write_non_explaining_obs_op( unsigned op, unsigned k );
+	void 	write_explain_obs_op( Action_Execution_Complex_Observation* obs_ptr );
+	// void	write_non_explaining_obs_op( unsigned op, unsigned k );
 	void	write_regular_op( unsigned op );
 
 protected:
