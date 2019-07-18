@@ -21,7 +21,7 @@ This software is adapted from work by Miguel Ramirez, Nir Lipovetzky, Hector Gef
 #### Changes:
 - Addition of this README
 - Addition of all files with '_complex' suffix.
-- Changes to main.cxx and Makefile
+- Changes to main, string_ops and Makefile
 - Change to usage() in options.cxx
 - Numerous small changes elsewhere to solve compilation issues
 
@@ -52,7 +52,6 @@ cd mod-metric-ff
 make libff
 cd ..
 make
-
 ```
 
 ### Usage:

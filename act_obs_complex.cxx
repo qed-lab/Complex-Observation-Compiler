@@ -7,6 +7,8 @@
 
 #include "string_ops.hxx"
 
+///////// SINGLE OBSERVATIONS ////////////
+
 Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::string op_name, unsigned op_index, std::set<std::string> ordering_prec_fluents, std::string observation_ID, unsigned option_group_idx)
 	: m_ordinal( 0 ), m_observation_ID(observation_ID), m_is_action_obs(true), m_option_group_idx(option_group_idx)
 {
@@ -14,6 +16,7 @@ Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::
   set_op_index(op_index);
   set_ordering_prec_fluents(ordering_prec_fluents);
 }
+
 
 Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::set<unsigned> observed_fluents, std::set<std::string> ordering_prec_fluents, std::string observation_ID, unsigned option_group_idx)
 	: m_ordinal( 0 ), m_observation_ID(observation_ID), m_is_action_obs(false), m_option_group_idx(option_group_idx)
@@ -23,7 +26,6 @@ Action_Execution_Complex_Observation::Action_Execution_Complex_Observation(std::
 }
 
 
-
 Action_Execution_Complex_Observation::~Action_Execution_Complex_Observation()
 {
 }
@@ -31,11 +33,8 @@ Action_Execution_Complex_Observation::~Action_Execution_Complex_Observation()
 void Action_Execution_Complex_Observation::set_op_name( std::string& name )
 {
 	PDDL::Task& task = PDDL::Task::instance();
-
 	m_str_codes.push_back( task.str_tab().get_code( name ) );
 }
-
-
 
 void Action_Execution_Complex_Observation::print(std::ostream& os)
 {
@@ -79,6 +78,8 @@ void Action_Execution_Complex_Observation::print(std::ostream& os)
 // 			at( occ[j] )->set_ordinal( j+1 );
 // 	}
 // }
+
+////////////// OBSERVATION SETS //////////////////
 
 
 Complex_Observation_Set::Complex_Observation_Set(std::string observation_filename)
@@ -133,7 +134,7 @@ void Complex_Observation_Set::print_all(std::ostream& os){
 }
 
 
-// Get all the operators from the domain, for easy referencing
+// Get all the operators/fluents from the domain, for easy referencing
 void Complex_Observation_Set::make_operator_and_fluent_indexes()
 {
 	PDDL::Task& task = PDDL::Task::instance();
