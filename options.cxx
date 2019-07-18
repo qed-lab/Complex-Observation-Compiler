@@ -29,7 +29,7 @@ void Options::parse_command_line( int argc, char** argv )
 	bool obs_specified = false;
 
 	Options& options = instance();
-	
+
 	while( opt != -1 )
 	{
 		switch (opt)
@@ -76,7 +76,7 @@ void Options::parse_command_line( int argc, char** argv )
 		std::cerr << "Domain description not specified" << std::endl;
 		print_usage();
 		std::exit(1);
-	}	
+	}
 	if ( !instance_specified )
 	{
 		std::cerr << "Instance description not specified" << std::endl;
@@ -93,13 +93,12 @@ void Options::parse_command_line( int argc, char** argv )
 
 void Options::print_usage()
 {
-	std::cerr << "pr2cbstrips: Plan Recognition to Cost-Based STRIPS Planning mapping" << std::endl;
-	std::cerr << "Authors: Miguel Ramirez, Hector Geffner (c) Universitat Pompeu Fabra, September 2008" << std::endl;
-	std::cerr << "Usage: ./pr2cbstrips -d <domain file> -i <instance file> -o <obs file>" << std::endl;
+	std::cerr << "pr2plan_complex: Plan Recognition with complex observations to Cost-Based STRIPS Planning mapping" << std::endl;
+	std::cerr << "Usage: ./pr2plan_complex -d <domain file> -i <instance file> -o <obs file>" << std::endl;
 	std::cerr << "Mandatory parameters:" << std::endl;
 	std::cerr << "-d         Domain specification in PDDL 2.1" << std::endl;
 	std::cerr << "-i         Instance specification in PDDL 2.1" << std::endl;
-	std::cerr << "-o         Observation stream description" << std::endl; 
+	std::cerr << "-o         Observation file" << std::endl;
 	std::cerr << "Optional parameters: " << std::endl;
 	std::cerr << "-v         Verbose Mode ON (default is OFF)" << std::endl;
 	std::cerr << "-F         Introduce forgo(obs) ops" << std::endl;

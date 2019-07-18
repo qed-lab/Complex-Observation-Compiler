@@ -2,7 +2,7 @@ CC = g++
 BISON = bison
 FLEX = flex
 
-NFF_TARGET = pr2plan
+NFF_TARGET = pr2plan_complex
 
 #CXXFLAGS = -g -Wall -Imod-metric-ff -DDEBUG -DPDDL_TYPE_CHECKING
 CXXFLAGS = -O3 -Wall -Imod-metric-ff -DNDEBUG
