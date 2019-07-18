@@ -35,24 +35,31 @@ This software is adapted from work by Miguel Ramirez, Nir Lipovetzky, Hector Gef
 (Make sure the Makefile has the correct command to call these.)
 To check if you have these, use
 ```
-> which bison
-> which flex
+which bison
+which flex
 ```
 If missing, macs can use brew ([brew.sh](https://brew.sh)) to install:
 ```
-> brew install bison
-> brew install flex
+brew install bison
+brew install flex
 ```
 
 ### Compiling
 This uses a modified version of metric-ff to parse PDDL and ground it, so that needs to be compiled first.
 
 ```
-> cd mod-metric-ff
-> make libff
-> cd ..
-> make
+cd mod-metric-ff
+make libff
+cd ..
+make
 
 ```
 
-### Using:
+### Usage:
+```
+pr2plan_complex -d <domain file> -i <instance file> -o <observation file>"
+```
+##### Optional parameters:
+- -v         Verbose Mode ON (default is OFF)
+- -F         Introduce forgo(obs) ops
+- -P         Generate Planning problems necessary for probabilistic PR
