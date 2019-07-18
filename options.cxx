@@ -7,7 +7,7 @@ const char* Options::m_optstring = "d:i:o:vh?FPZ:";
 
 Options::Options()
 	: m_verbose( false ), m_introduce_forgo_ops( false ), m_prob_pr( false ),
-	m_factor( 1.0 ), m_convert_to_integer( false )
+	m_factor( 1.0 ), m_convert_to_integer( false ), m_multiple_obs_files(false)
 {
 }
 
@@ -43,8 +43,14 @@ void Options::parse_command_line( int argc, char** argv )
 			instance_specified = true;
 			break;
 		case 'o' : // observations file
-			options.m_obs_fname = optarg;
-			obs_specified = true;
+      if(obs_specified){
+        options.m_obs_fnames.insert(options.m_obs_fname);
+        options.m_obs_fnames.insert(optarg);
+        options.m_multiple_obs_files = true;
+      } else {
+        options.m_obs_fname = optarg;
+        obs_specified = true;
+      }
 			break;
 		case 'v' : // verbose mode activated
 			options.m_verbose = true;
