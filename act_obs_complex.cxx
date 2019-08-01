@@ -257,6 +257,7 @@ std::string Complex_Observation_Set::add_observation(std::string observation, st
   char begin_char = *(obs_start);
   char end_char = *(obs_end);
 
+  // Fluent observation
   if( begin_char == '~' && end_char == '~'){
     std::vector<std::string> fluentlist = split(std::next(obs_start), std::prev(obs_end), '^');
     std::set<unsigned> fluent_indices;
@@ -277,9 +278,14 @@ std::string Complex_Observation_Set::add_observation(std::string observation, st
 		m_observations.push_back( new_obs );
     return new_obs->observation_ID();
   }
+  // Action observation
   else {
-    for ( unsigned k = 0; k < observation.size(); k++ )
+    for ( unsigned k = 0; k < observation.size(); k++ ){
 			observation[k] = toupper(observation[k]);
+      if(observation[k] == '?'){
+        return add_garbled_observation(observation, observation_ID, ordering_fluents);
+      }
+    }
 		std::map< std::string, unsigned>::iterator it = operator_index().find( observation );
 		if ( it == operator_index().end() )
 		{
@@ -294,6 +300,51 @@ std::string Complex_Observation_Set::add_observation(std::string observation, st
   }
 
 }
+
+std::string Complex_Observation_Set::add_garbled_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents){
+
+  observation = strip(observation);
+  for(auto& x: observation){
+    x = toupper(x);
+  }
+  std::string::iterator obs_start = observation.begin();
+  std::string::iterator obs_end = std::prev(observation.end());
+  char begin_char = *(obs_start);
+  char end_char = *(obs_end);
+
+  int q_pos = observation.find("?");
+  if ( q_pos == std::string::npos){
+    std::cout << "Tried to garble an observation without a question mark." << std::endl;
+    std::cout << "Bailing out!" << std::endl;
+    std::exit(1);
+  }
+  std::string before_q = observation.substr(0, q_pos);
+  std::string after_q = observation.substr(q_pos+1);
+  std::cout << before_q << " __?__ " << after_q << std::endl;
+
+  int option_group_idx = 1;
+  std::string obs_fluent = ""; // Start empty so if no operator matches, no harm done
+  for(std::map<std::string,unsigned>::iterator it = m_operator_index.begin(); it != m_operator_index.end(); ++it){
+    std::string this_op_name = it->first;
+    int missing_size = this_op_name.size() - before_q.size() - after_q.size();
+    // If this operator is big enough to be it
+    if(missing_size > 0){
+      std::string head = this_op_name.substr(0,q_pos);
+      std::string tail = this_op_name.substr(q_pos+missing_size);
+      // Everything around the question mark matches:
+      if(before_q.compare(head) ==0 && after_q.compare(tail) ==0){
+        obs_fluent = add_observation(this_op_name, observation_ID, ordering_fluents, option_group_idx++);
+        // std::cout << "GARBLE: " << this_op_name << std::endl;
+      }
+    }
+
+  }
+  return obs_fluent;
+
+
+}
+
+
 
 std::vector<std::string> Complex_Observation_Set::separate_members(std::string::iterator begin, std::string::iterator end){
   std::vector<std::string> members;

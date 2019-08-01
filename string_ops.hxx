@@ -61,9 +61,9 @@ inline std::string	strip(std::string input)
 	std::string::iterator end = input.end();
 
 	for ( ;start != input.end(); start++)
-		if ( isalnum(*start) || *start == '[' || *start == '{' || *start == '|' || *start == '~' || *start == '^') break;
+		if ( isalnum(*start) || *start == '[' || *start == '{' || *start == '|' || *start == '~' || *start == '^' || *start == '?') break;
 	for ( ;end != start; end-- )
-		if ( isalnum(*end) || *end == ']' || *end == '}' || *end == '|' || *end == '~' || *end == '^')
+		if ( isalnum(*end) || *end == ']' || *end == '}' || *end == '|' || *end == '~' || *end == '^' || *end == '?')
 		{
 			end++;
 			break;

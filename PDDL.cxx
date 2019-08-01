@@ -1,7 +1,7 @@
 /*
     Miguel Ramirez, Nir Lipovetzky, Hector Geffner
     C^3: A planner for the sequential, satisficing track of the IPC-6
-    Copyright (C) 2008  
+    Copyright (C) 2008
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -77,14 +77,14 @@ Task& Task::instance()
 void Task::setup()
 {
 	Options& opt = Options::instance();
-	
+
 	float t0 = time_used();
 	FF_parse_problem( opt.domain_filename().c_str(), opt.instance_filename().c_str() );
-	float tf = time_used(); 
+	float tf = time_used();
 	m_glog << "Parsing="; report_interval( t0, tf, m_glog );
-	
+
 	t0 = time_used();
-	FF_instantiate_problem();	
+	FF_instantiate_problem();
 	tf = time_used();
 	m_glog << "Instantiation="; report_interval( t0, tf, m_glog );
 
@@ -106,10 +106,10 @@ void Task::setup()
 	// Setup costs
 	m_op_costs.resize( useful_ops().size() );
 	for ( unsigned o = 0; o < useful_ops().size(); o++ )
-		m_op_costs[o] = useful_ops()[o]->metric_cost();	
+		m_op_costs[o] = useful_ops()[o]->metric_cost();
 
 	set_domain_name( FF::get_domain_name() );
-	set_problem_name( FF::get_problem_name() ); 
+	set_problem_name( FF::get_problem_name() );
 }
 
 void Task::create_fluents()
@@ -121,7 +121,7 @@ void Task::create_fluents()
 		std::string ft_name = FF::get_ft_name(i);
 		int str_code = str_tab().get_code( ft_name );
 		fluents().push_back( new Fluent( str_code ) );
-	}	
+	}
 }
 
 void Task::create_init_and_goal()
@@ -161,13 +161,13 @@ void Task::create_operators()
 		std::string op_name = FF::get_op_name(i);
 		useful_ops().push_back( new Operator( str_tab().get_code( op_name ) ) );
 		Operator* curr_op = useful_ops().back();
-	
+
 		for ( int j = 0; j < gef_conn[i].num_PC; j++ )
 		{
 			unsigned p = gef_conn[i].PC[j] + 1;
 			curr_op->preconds().set( p );
 			curr_op->prec_vec().push_back( p );
-		}		
+		}
 
 		for ( int j = 0; j < gef_conn[i].num_A; j++ )
 		{

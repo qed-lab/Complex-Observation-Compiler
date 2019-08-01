@@ -80,12 +80,21 @@ public:
 
   /*
    * Add a single observation (action or fluent) to the set.
-   * observation - the observation. ~f1,...,fn~ is used for fluent observations
+   * observation - the observation. ~f1^f2^...^fn~ is used for fluent observations
    * observation_ID - The identifying fluent this observation uses for ordering
    * ordering_fluents - A set of those fluents (as strings) which must precede this observation
    * option_group_idx - Default 0 if not in an option group, else used to separately identify observations with the same observation_ID
   */
   std::string add_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents, unsigned option_group_idx=0);
+
+  /*
+   * Add a 'garbled' observed action -- an action missing a parameter. This creates an option group with all possible actions it might be.
+   * observation - the observation.
+   * observation_ID - The identifying fluent this observation uses for ordering
+   * ordering_fluents - A set of those fluents (as strings) which must precede this observation
+  */
+  std::string add_garbled_observation(std::string observation, std::string observation_ID, std::set<std::string> ordering_fluents);
+
 
   void print_all(std::ostream& os);
 

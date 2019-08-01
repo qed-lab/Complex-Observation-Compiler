@@ -57,11 +57,9 @@ int main( int argc, char** argv )
 	std::cout << "Initial state: ";
 
 
-  // Read in the observations (We will replace this with our own)
+  // Read in the observations
   Complex_Observation_Set observations(prog_opts.obs_filename());
   observations.print_all(std::cout);
-  // PR_Observation_Stream_Reader obs_stream_reader;
-  // obs_stream_reader.parse( prog_opts.obs_filename() );
 
 	if ( !prog_opts.prob_pr_mode() )
 	{
