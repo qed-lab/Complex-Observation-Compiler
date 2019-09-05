@@ -60,5 +60,3 @@ pr2plan_complex -d <domain file> -i <instance file> -o <observation file>"
 ```
 ##### Optional parameters:
 - -v         Verbose Mode ON (default is OFF)
-- -F         Introduce forgo(obs) ops
-- -P         Generate Planning problems necessary for probabilistic PR
