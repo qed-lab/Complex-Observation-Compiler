@@ -25,7 +25,7 @@ This software is adapted from work by Miguel Ramirez, Nir Lipovetzky, Hector Gef
 - Change to usage() in options.cxx
 - Numerous small changes elsewhere to solve compilation issues
 
-
+> **For code used in the evaluation section for the paper for this work (Nelson and Cardona-Rivera 2020), see https://github.com/qed-lab/Evalution-Code-Complex-Observations-for-Plan-Recongition-as-Planning**
 
 
 ### Dependencies:
